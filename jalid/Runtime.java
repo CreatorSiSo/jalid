@@ -1,5 +1,6 @@
 package jalid;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
@@ -10,14 +11,19 @@ public class Runtime {
         return new Signal<T>(nextId++, this);
     }
 
-    <T> void update(int id, UnaryOperator<T> updateFn) {
-        ReactiveNode node = nodes.get(id);
+    <T> void update(int nodeId, UnaryOperator<T> updateFn) {
+        ReactiveNode node = nodes.get(nodeId);
         node.value = updateFn.apply((T) node.value);
+
+        for (Integer subscriberId : subscribers.get(nodeId)) {
+            update(subscriberId, updateFn);
+        }
+
         node.state = ReactiveNode.State.Dirty;
     }
 
-    <T> T get(int id) {
-        return (T) nodes.get(id).value;
+    <T> T get(int nodeId) {
+        return (T) nodes.get(nodeId).value;
     }
 
     @Override
@@ -39,6 +45,7 @@ public class Runtime {
 
     int nextId = 1;
     HashMap<Integer, ReactiveNode> nodes = new HashMap<>();
+    HashMap<Integer, ArrayList<Integer>> subscribers = new HashMap<>();
 }
 
 class ReactiveNode {
