@@ -7,7 +7,7 @@ public class Signal<T> {
     }
 
     public void set(T value) {
-        owner.update(id, prev -> value);
+        owner.updateValue(id, prev -> value);
     }
 
     public T get() {
