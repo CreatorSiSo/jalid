@@ -1,19 +1,20 @@
 package test;
 
-import jalid.Runtime;
+import jalid.Effect;
 import jalid.Signal;
 
 public class Reactive {
     public static void main(String[] args) {
-        Runtime runtime = new Runtime();
-        Signal<Boolean> boolSignal = runtime.createSignal(true);
-        runtime.createSignal("Window Title");
-        System.out.println(runtime);
-        System.out.println("boolSignal = " + boolSignal);
-        System.out.println("bool = " + boolSignal.get());
-        boolSignal.set(false);
-        System.out.println("boolSignal = " + boolSignal);
-        System.out.println("bool = " + boolSignal.get());
-        System.out.println(runtime);
+        Signal<Boolean> bool = Signal.create(true);
+        Signal<String> title = Signal.create("Window Title");
+
+        Effect.create(() -> {
+            System.out.println("bool = " + bool.get());
+            System.out.println("title = " + title.get());
+        });
+
+        bool.set(false);
+        bool.update(prev -> prev ? false : true);
+        title.update(prev -> prev.replace("Window", "Changed"));
     }
 }
